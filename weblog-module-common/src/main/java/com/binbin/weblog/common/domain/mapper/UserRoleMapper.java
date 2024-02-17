@@ -17,4 +17,6 @@ public interface UserRoleMapper extends BaseMapper<UserRoleDO> {
 
         return selectList(wrapper);//满足.eq条件的所有记录，以列表形式返回
     }
+
+
 }
