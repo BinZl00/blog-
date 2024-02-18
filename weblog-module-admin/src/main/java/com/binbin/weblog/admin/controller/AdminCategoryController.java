@@ -2,6 +2,7 @@ package com.binbin.weblog.admin.controller;
 
 import com.binbin.weblog.admin.model.vo.FindCategoryPageListReqVO;
 import com.binbin.weblog.admin.model.vo.category.AddCategoryReqVO;
+import com.binbin.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.binbin.weblog.admin.service.impl.AdminCategoryService;
 import com.binbin.weblog.common.aspect.ApiOperationLog;
 import com.binbin.weblog.common.utils.PageResponse;
@@ -37,5 +38,18 @@ public class AdminCategoryController {
         return categoryService.findCategoryList(findCategoryPageListReqVO);
     }
 
+    @PostMapping("/category/delete")
+    @ApiOperation(value = "删除分类")
+    @ApiOperationLog(description = "删除分类")
+    public Response deleteCategory(@RequestBody @Validated DeleteCategoryReqVO deleteCategoryReqVO) {
+        return categoryService.deleteCategory(deleteCategoryReqVO);
+    }
+
+    @PostMapping("/category/select/list")
+    @ApiOperation(value = "分类 Select 下拉列表数据获取")
+    @ApiOperationLog(description = "分类 Select 下拉列表数据获取")
+    public Response findCategorySelectList() {
+        return categoryService.findCategorySelectList();
+    }
 
 }

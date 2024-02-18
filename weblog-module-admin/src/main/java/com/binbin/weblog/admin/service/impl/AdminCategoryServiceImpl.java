@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.binbin.weblog.admin.model.vo.FindCategoryPageListReqVO;
 import com.binbin.weblog.admin.model.vo.FindCategoryPageListRspVO;
 import com.binbin.weblog.admin.model.vo.category.AddCategoryReqVO;
+import com.binbin.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.binbin.weblog.common.domain.dos.CategoryDO;
 import com.binbin.weblog.common.domain.mapper.CategoryMapper;
 import com.binbin.weblog.common.enums.ResponseCodeEnum;
 import com.binbin.weblog.common.exception.BizException;
+import com.binbin.weblog.common.model.vo.SelectRspVO;
 import com.binbin.weblog.common.utils.PageResponse;
 import com.binbin.weblog.common.utils.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +31,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
 
-    /**
-     * 添加分类
-     */
+    //添加分类
     @Override
     public Response addCategory(AddCategoryReqVO addCategoryReqVO) {
         String categoryName = addCategoryReqVO.getName();
@@ -55,6 +55,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return Response.success();
     }
 
+    //分页
     @Override
     public PageResponse findCategoryList(FindCategoryPageListReqVO findCategoryPageListReqVO) {
         // 获取前端入参数据，当前页、每页展示的数据量等
@@ -100,4 +101,38 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
         return PageResponse.success(categoryDOPage, vos);
     }
+
+    //删除分类
+    @Override
+    public Response deleteCategory(DeleteCategoryReqVO deleteCategoryReqVO) {
+        // 分类 ID
+        Long categoryId = deleteCategoryReqVO.getId();
+        // 删除分类
+        categoryMapper.deleteById(categoryId);
+        return Response.success();
+    }
+
+    //下拉菜单分类
+    @Override
+    public Response findCategorySelectList() {
+        // 查询所有分类，null 参数表示不使用任何查询条件。。
+        List<CategoryDO> categoryDOS = categoryMapper.selectList(null);
+
+        // DO 转 VO
+        List<SelectRspVO> selectRspVOS = null;
+        // 如果分类数据不为空
+        if (!CollectionUtils.isEmpty(categoryDOS)) {
+            // 将分类 ID 作为 Value 值，将分类名称作为 label 展示
+            selectRspVOS = categoryDOS.stream()
+                    .map(categoryDO -> SelectRspVO.builder()
+                            .label(categoryDO.getName())
+                            .value(categoryDO.getId())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
+        return Response.success(selectRspVOS);
+    }
+
+
 }

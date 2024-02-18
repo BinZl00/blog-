@@ -27,7 +27,6 @@
             <groupId>com.binbin</groupId>
             <artifactId>weblog-module-jwt</artifactId>
         </dependency>
-
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
