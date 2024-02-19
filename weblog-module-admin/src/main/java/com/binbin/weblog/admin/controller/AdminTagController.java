@@ -1,6 +1,7 @@
 package com.binbin.weblog.admin.controller;
 
 import com.binbin.weblog.admin.model.vo.tag.AddTagReqVO;
+import com.binbin.weblog.admin.model.vo.tag.DeleteTagReqVO;
 import com.binbin.weblog.admin.model.vo.tag.FindTagPageListReqVO;
 import com.binbin.weblog.admin.service.impl.AdminTagService;
 import com.binbin.weblog.common.aspect.ApiOperationLog;
@@ -34,6 +35,13 @@ public class AdminTagController {
     @ApiOperationLog(description = "标签分页数据获取")
     public PageResponse findTagPageList(@RequestBody @Validated FindTagPageListReqVO findTagPageListReqVO) {
         return tagService.findTagPageList(findTagPageListReqVO);
+    }
+
+    @PostMapping("/tag/delete")
+    @ApiOperation(value = "删除标签")
+    @ApiOperationLog(description = "删除标签")
+    public Response deleteTag(@RequestBody @Validated DeleteTagReqVO deleteTagReqVO) {
+        return tagService.deleteTag(deleteTagReqVO);
     }
 
 }
