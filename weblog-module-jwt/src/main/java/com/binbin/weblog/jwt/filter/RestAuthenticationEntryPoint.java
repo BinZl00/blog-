@@ -22,7 +22,6 @@ import java.io.IOException;
 @Slf4j
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.warn("用户未登录访问受保护的资源: ", authException);
@@ -32,4 +31,5 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ResultUtil.fail(response, HttpStatus.UNAUTHORIZED.value(), Response.fail(authException.getMessage()));
     }
+
 }
