@@ -1,8 +1,10 @@
 package com.binbin.weblog.admin.controller;
 
 import com.binbin.weblog.admin.model.vo.tag.AddTagReqVO;
+import com.binbin.weblog.admin.model.vo.tag.FindTagPageListReqVO;
 import com.binbin.weblog.admin.service.impl.AdminTagService;
 import com.binbin.weblog.common.aspect.ApiOperationLog;
+import com.binbin.weblog.common.utils.PageResponse;
 import com.binbin.weblog.common.utils.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +27,13 @@ public class AdminTagController {
     @ApiOperationLog(description = "添加标签")
     public Response addTags(@RequestBody @Validated AddTagReqVO addTagReqVO) {
         return tagService.addTags(addTagReqVO);
+    }
+
+    @PostMapping("/tag/list")
+    @ApiOperation(value = "标签分页数据获取")
+    @ApiOperationLog(description = "标签分页数据获取")
+    public PageResponse findTagPageList(@RequestBody @Validated FindTagPageListReqVO findTagPageListReqVO) {
+        return tagService.findTagPageList(findTagPageListReqVO);
     }
 
 }

@@ -15,7 +15,7 @@ public interface AdminCategoryService {
     /**
      * 分类分页数据查询
      */
-    PageResponse findCategoryList(FindCategoryPageListReqVO findCategoryPageListReqVO);
+    PageResponse findCategoryPageList(FindCategoryPageListReqVO findCategoryPageListReqVO);
 
     /**
      * 删除分类
