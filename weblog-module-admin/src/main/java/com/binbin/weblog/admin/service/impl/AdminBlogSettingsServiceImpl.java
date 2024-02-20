@@ -2,15 +2,20 @@ package com.binbin.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.binbin.weblog.admin.convert.BlogSettingsConvert;
+import com.binbin.weblog.admin.model.vo.blogsettings.FindBlogSettingsRspVO;
 import com.binbin.weblog.admin.model.vo.blogsettings.UpdateBlogSettingsReqVO;
 import com.binbin.weblog.common.domain.dos.BlogSettingsDO;
 import com.binbin.weblog.common.domain.mapper.BlogSettingsMapper;
 import com.binbin.weblog.common.utils.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminBlogSettingsServiceImpl extends ServiceImpl<BlogSettingsMapper, BlogSettingsDO> implements AdminBlogSettingsService {
+    @Autowired
+    private BlogSettingsMapper blogSettingsMapper;
 
+    //博客基础信息修改
     @Override
     public Response updateBlogSettings(UpdateBlogSettingsReqVO updateBlogSettingsReqVO) {
         // VO 转 DO
@@ -33,5 +38,15 @@ public class AdminBlogSettingsServiceImpl extends ServiceImpl<BlogSettingsMapper
         根据实体对象的主键id,如果存在,那么它会更新这个主键对应的记录；如果不存在,它会插入一条新的记录。*/
         saveOrUpdate(blogSettingsDO);
         return Response.success();
+    }
+
+    //获取博客设置详情
+    @Override
+    public Response findDetail() {
+        // 查询 ID 为 1 的记录
+        BlogSettingsDO blogSettingsDO = blogSettingsMapper.selectById(1L);
+        // DO 转 VO
+        FindBlogSettingsRspVO vo = BlogSettingsConvert.INSTANCE.convertDO2VO(blogSettingsDO);
+        return Response.success(vo);
     }
 }

@@ -9,4 +9,9 @@ public interface AdminBlogSettingsService {
      */
     Response updateBlogSettings(UpdateBlogSettingsReqVO updateBlogSettingsReqVO);
 
+    /**
+     * 获取博客设置详情
+     */
+    Response findDetail();
+
 }

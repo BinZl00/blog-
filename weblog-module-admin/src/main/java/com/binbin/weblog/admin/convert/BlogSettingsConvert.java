@@ -1,5 +1,6 @@
 package com.binbin.weblog.admin.convert;
 
+import com.binbin.weblog.admin.model.vo.blogsettings.FindBlogSettingsRspVO;
 import com.binbin.weblog.admin.model.vo.blogsettings.UpdateBlogSettingsReqVO;
 import com.binbin.weblog.common.domain.dos.BlogSettingsDO;
 import org.mapstruct.Mapper;
@@ -18,6 +19,11 @@ public interface BlogSettingsConvert {
      * 将 VO 转化为 DO，博客基础信息修改入参UpdateBlogSettingsReqVO 转换为 表BlogSettingsDO对象
      */
     BlogSettingsDO convertVO2DO(UpdateBlogSettingsReqVO bean);
+
+    /**
+     * 将 DO 转化为 VO
+     */
+    FindBlogSettingsRspVO convertDO2VO(BlogSettingsDO bean);
 }
 /*
 类内部定义了INSTANCE，直接使用BlogSettingsConvert.INSTANCE.convertVO2DO(?)
