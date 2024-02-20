@@ -60,10 +60,15 @@
 
     <build>
         <plugins>
-            <plugin>
+            <plugin>   <!--打包成jar包-->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>   <!--编译时使用-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
         </plugins>
     </build>
 
