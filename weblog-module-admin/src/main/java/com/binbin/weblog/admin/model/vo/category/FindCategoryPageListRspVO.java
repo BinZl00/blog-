@@ -1,4 +1,4 @@
-package com.binbin.weblog.admin.model.vo;
+package com.binbin.weblog.admin.model.vo.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

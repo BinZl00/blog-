@@ -20,7 +20,7 @@ public class TagDO {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private String name;
+    private String name; //对应入参key
 
     private LocalDateTime createTime;
 

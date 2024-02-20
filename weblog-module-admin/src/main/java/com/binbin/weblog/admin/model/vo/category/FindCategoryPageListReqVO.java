@@ -1,4 +1,4 @@
-package com.binbin.weblog.admin.model.vo;
+package com.binbin.weblog.admin.model.vo.category;
 
 import com.binbin.weblog.common.model.BasePageQuery;
 import io.swagger.annotations.ApiModel;

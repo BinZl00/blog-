@@ -2,13 +2,11 @@ package com.binbin.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.binbin.weblog.admin.model.vo.tag.AddTagReqVO;
-import com.binbin.weblog.admin.model.vo.tag.DeleteTagReqVO;
-import com.binbin.weblog.admin.model.vo.tag.FindTagPageListReqVO;
-import com.binbin.weblog.admin.model.vo.tag.FindTagPageListRspVO;
+import com.binbin.weblog.admin.model.vo.tag.*;
 import com.binbin.weblog.common.domain.dos.TagDO;
 import com.binbin.weblog.common.domain.mapper.TagMapper;
 import com.binbin.weblog.common.enums.ResponseCodeEnum;
+import com.binbin.weblog.common.model.vo.SelectRspVO;
 import com.binbin.weblog.common.utils.PageResponse;
 import com.binbin.weblog.common.utils.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -82,12 +80,28 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
     public Response deleteTag(DeleteTagReqVO deleteTagReqVO) {
         // 标签 ID
         Long tagId = deleteTagReqVO.getId();
-
         // 根据标签 ID 删除
         int count = tagMapper.deleteById(tagId);
 
         return count == 1 ? Response.success() : Response.fail(ResponseCodeEnum.TAG_NOT_EXISTED);
+    }
 
+    @Override
+    public Response searchTags(SearchTagsReqVO searchTagsReqVO) {
+        String key = searchTagsReqVO.getKey();
+        // 执行模糊查询
+        List<TagDO> tagDOS = tagMapper.selectByKey(key);
+        // do 转 vo
+        List<SelectRspVO> vos = null;
+        if (!CollectionUtils.isEmpty(tagDOS)) {
+            vos = tagDOS.stream()
+                    .map(tagDO -> SelectRspVO.builder()
+                            .label(tagDO.getName())
+                            .value(tagDO.getId())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return Response.success(vos);
     }
 
 

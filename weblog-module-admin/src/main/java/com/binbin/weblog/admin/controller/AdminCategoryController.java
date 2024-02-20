@@ -1,6 +1,6 @@
 package com.binbin.weblog.admin.controller;
 
-import com.binbin.weblog.admin.model.vo.FindCategoryPageListReqVO;
+import com.binbin.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.binbin.weblog.admin.model.vo.category.AddCategoryReqVO;
 import com.binbin.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.binbin.weblog.admin.service.impl.AdminCategoryService;

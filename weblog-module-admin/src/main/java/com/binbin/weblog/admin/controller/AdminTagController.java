@@ -3,6 +3,7 @@ package com.binbin.weblog.admin.controller;
 import com.binbin.weblog.admin.model.vo.tag.AddTagReqVO;
 import com.binbin.weblog.admin.model.vo.tag.DeleteTagReqVO;
 import com.binbin.weblog.admin.model.vo.tag.FindTagPageListReqVO;
+import com.binbin.weblog.admin.model.vo.tag.SearchTagsReqVO;
 import com.binbin.weblog.admin.service.impl.AdminTagService;
 import com.binbin.weblog.common.aspect.ApiOperationLog;
 import com.binbin.weblog.common.utils.PageResponse;
@@ -42,6 +43,13 @@ public class AdminTagController {
     @ApiOperationLog(description = "删除标签")
     public Response deleteTag(@RequestBody @Validated DeleteTagReqVO deleteTagReqVO) {
         return tagService.deleteTag(deleteTagReqVO);
+    }
+
+    @PostMapping("/tag/search")
+    @ApiOperation(value = "标签模糊查询")
+    @ApiOperationLog(description = "标签模糊查询")
+    public Response searchTags(@RequestBody @Validated SearchTagsReqVO searchTagsReqVO) {
+        return tagService.searchTags(searchTagsReqVO);
     }
 
 }
