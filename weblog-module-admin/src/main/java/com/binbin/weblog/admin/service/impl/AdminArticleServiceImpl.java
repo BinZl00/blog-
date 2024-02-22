@@ -231,6 +231,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
      * 编辑文章回显查询
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Response findArticleDetail(FindArticleDetailReqVO findArticleDetailReqVO) {
         Long articleId = findArticleDetailReqVO.getId();
 
@@ -267,6 +268,62 @@ public class AdminArticleServiceImpl implements AdminArticleService {
              "tagIds": [1, 2, 3], // 标签 ID 集合
          }
          */
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Response updateArticle(UpdateArticleReqVO updateArticleReqVO) {
+        Long articleId = updateArticleReqVO.getId();
+
+        // 1. VO 转 ArticleDO, 更新文章信息
+        ArticleDO articleDO = ArticleDO.builder()
+                .id(articleId)
+                .title(updateArticleReqVO.getTitle())
+                .cover(updateArticleReqVO.getCover())
+                .summary(updateArticleReqVO.getSummary())
+                .updateTime(LocalDateTime.now())
+                .build();
+        int count = articleMapper.updateById(articleDO);//接收实体对象,而不是单独的 ID,只更新那些字段值不为 null 的记录
+
+        // 更新的记录数为 0，说明文章不存在
+        if (count == 0) {
+            log.warn("==> 该文章不存在, articleId: {}", articleId);
+            throw new BizException(ResponseCodeEnum.ARTICLE_NOT_FOUND);
+        }
+
+        // 2. VO 转 ArticleContentDO，更新文章内容
+        ArticleContentDO articleContentDO = ArticleContentDO.builder()
+                .articleId(articleId)
+                .content(updateArticleReqVO.getContent())
+                .build();
+        articleContentMapper.updateByArticleId(articleContentDO);
+
+
+        // 3. 更新文章分类
+        Long categoryId = updateArticleReqVO.getCategoryId();
+
+        // 3.1 校验提交的分类是否真实存在
+        CategoryDO categoryDO = categoryMapper.selectById(categoryId);
+        if (Objects.isNull(categoryDO)) {
+            log.warn("==> 分类不存在, categoryId: {}", categoryId);
+            throw new BizException(ResponseCodeEnum.CATEGORY_NOT_EXISTED);
+        }
+
+        // 删除文章与旧分类的关联，然后插入新的关联
+        articleCategoryRelMapper.deleteByArticleId(articleId);
+        ArticleCategoryRelDO articleCategoryRelDO = ArticleCategoryRelDO.builder()
+                .articleId(articleId)
+                .categoryId(categoryId)
+                .build();
+        articleCategoryRelMapper.insert(articleCategoryRelDO);
+
+        // 4. 保存文章关联的标签集合，获取新标签列表，调用 insertTags 方法保存新标签
+        // 删除文章与所有旧标签的关联。
+        articleTagRelMapper.deleteByArticleId(articleId);
+        List<String> publishTags = updateArticleReqVO.getTags();
+        insertTags(articleId, publishTags);
+
+        return Response.success();
     }
 
 }
