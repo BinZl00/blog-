@@ -20,6 +20,14 @@ public interface ArticleContentMapper extends BaseMapper<ArticleContentDO> {
         return delete(wrapper);
     }
 
+    /**
+     * 根据文章 ID 查询
+     * @param articleId
+     */
+    default ArticleContentDO selectByArticleId(Long articleId) {
+        return selectOne(Wrappers.<ArticleContentDO>lambdaQuery()
+                .eq(ArticleContentDO::getArticleId, articleId));
+    }
 
 
 }

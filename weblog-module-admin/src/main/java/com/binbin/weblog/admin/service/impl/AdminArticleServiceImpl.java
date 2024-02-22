@@ -2,10 +2,8 @@ package com.binbin.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.binbin.weblog.admin.model.vo.article.DeleteArticleReqVO;
-import com.binbin.weblog.admin.model.vo.article.FindArticlePageListReqVO;
-import com.binbin.weblog.admin.model.vo.article.FindArticlePageListRspVO;
-import com.binbin.weblog.admin.model.vo.article.PublishArticleReqVO;
+import com.binbin.weblog.admin.convert.ArticleDetailConvert;
+import com.binbin.weblog.admin.model.vo.article.*;
 import com.binbin.weblog.common.domain.dos.*;
 import com.binbin.weblog.common.domain.mapper.*;
 import com.binbin.weblog.common.enums.ResponseCodeEnum;
@@ -208,7 +206,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
 
         // 执行分页查询
         Page<ArticleDO> articleDOPage = articleMapper.selectPageList(current, size, title, startDate, endDate);
-        //getRecords() 是MyBatis Plus中 Page 类的方法，用于 从分页查询的结果中 获取当前页的记录列表。
+        //getRecords() 是MyBatis Plus中 Page 类的方法，用于 从分页查询的结果中 获取 当前页的记录列表。
         List<ArticleDO> articleDOS = articleDOPage.getRecords();
 
         // DO 转 VO
@@ -227,6 +225,48 @@ public class AdminArticleServiceImpl implements AdminArticleService {
 
         return PageResponse.success(articleDOPage, vos);
 
+    }
+
+    /**
+     * 编辑文章回显查询
+     */
+    @Override
+    public Response findArticleDetail(FindArticleDetailReqVO findArticleDetailReqVO) {
+        Long articleId = findArticleDetailReqVO.getId();
+
+        ArticleDO articleDO = articleMapper.selectById(articleId);
+
+        if (Objects.isNull(articleDO)) {
+            log.warn("==> 查询的文章不存在，articleId: {}", articleId);
+            throw new BizException(ResponseCodeEnum.ARTICLE_NOT_FOUND);
+        }
+        //查询文章内容、文章-分类、标签
+        ArticleContentDO articleContentDO = articleContentMapper.selectByArticleId(articleId);
+        ArticleCategoryRelDO articleCategoryRelDO = articleCategoryRelMapper.selectByArticleId(articleId);
+        List<ArticleTagRelDO> articleTagRelDOS = articleTagRelMapper.selectByArticleId(articleId);
+
+        // 获取对应标签 ID 集合
+        List<Long> tagIds = articleTagRelDOS.stream().map(ArticleTagRelDO::getTagId).collect(Collectors.toList());
+
+        // DO 转 VO
+        FindArticleDetailRspVO vo = ArticleDetailConvert.INSTANCE.convertDO2VO(articleDO);
+        //补充子表
+        vo.setContent(articleContentDO.getContent());
+        vo.setCategoryId(articleCategoryRelDO.getCategoryId());
+        vo.setTagIds(tagIds);
+
+        return Response.success(vo);
+        /**
+         "data": {
+             "id": 12, // 文章 ID
+             "title": "", // 文章标题
+             "cover": "", // 文章封面
+             "content": "", // 文章内容
+             "summary": "", // 文章摘要
+             "categoryId": 1, // 分类 ID
+             "tagIds": [1, 2, 3], // 标签 ID 集合
+         }
+         */
     }
 
 }

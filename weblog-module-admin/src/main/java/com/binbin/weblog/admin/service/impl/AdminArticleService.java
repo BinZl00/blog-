@@ -1,6 +1,7 @@
 package com.binbin.weblog.admin.service.impl;
 
 import com.binbin.weblog.admin.model.vo.article.DeleteArticleReqVO;
+import com.binbin.weblog.admin.model.vo.article.FindArticleDetailReqVO;
 import com.binbin.weblog.admin.model.vo.article.FindArticlePageListReqVO;
 import com.binbin.weblog.admin.model.vo.article.PublishArticleReqVO;
 import com.binbin.weblog.common.utils.Response;
@@ -21,5 +22,9 @@ public interface AdminArticleService {
      */
     Response findArticlePageList(FindArticlePageListReqVO findArticlePageListReqVO);
 
+    /**
+     * 查询文章详情
+     */
+    Response findArticleDetail(FindArticleDetailReqVO findArticleDetailReqVO);
 
 }
