@@ -1,6 +1,7 @@
 package com.binbin.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.binbin.weblog.admin.model.vo.article.DeleteArticleReqVO;
 import com.binbin.weblog.admin.model.vo.article.PublishArticleReqVO;
 import com.binbin.weblog.common.domain.dos.*;
 import com.binbin.weblog.common.domain.mapper.*;
@@ -167,6 +168,25 @@ public class AdminArticleServiceImpl implements AdminArticleService {
             // 批量插入
             articleTagRelMapper.insertBatchSomeColumn(articleTagRelDOS);
         }
+    }
+
+    /**
+     * 删除文章
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Response deleteArticle(DeleteArticleReqVO deleteArticleReqVO) {
+        Long articleId = deleteArticleReqVO.getId();
+
+        // 1. 删除文章
+        articleMapper.deleteById(articleId);
+        // 2. 删除文章内容
+        articleContentMapper.deleteByArticleId(articleId);
+        // 3. 删除文章-分类关联记录
+        articleCategoryRelMapper.deleteByArticleId(articleId);
+        // 4. 删除文章-标签关联记录
+        articleTagRelMapper.deleteByArticleId(articleId);
+        return Response.success();
     }
 
 }
