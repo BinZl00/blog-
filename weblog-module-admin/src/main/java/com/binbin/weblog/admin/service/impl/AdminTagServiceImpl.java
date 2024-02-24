@@ -1,11 +1,15 @@
 package com.binbin.weblog.admin.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.binbin.weblog.admin.model.vo.tag.*;
+import com.binbin.weblog.common.domain.dos.ArticleTagRelDO;
 import com.binbin.weblog.common.domain.dos.TagDO;
+import com.binbin.weblog.common.domain.mapper.ArticleTagRelMapper;
 import com.binbin.weblog.common.domain.mapper.TagMapper;
 import com.binbin.weblog.common.enums.ResponseCodeEnum;
+import com.binbin.weblog.common.exception.BizException;
 import com.binbin.weblog.common.model.vo.SelectRspVO;
 import com.binbin.weblog.common.utils.PageResponse;
 import com.binbin.weblog.common.utils.Response;
@@ -17,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +30,8 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
 
     @Autowired
     private TagMapper tagMapper;
-
+    @Autowired
+    private ArticleTagRelMapper articleTagRelMapper;
     /**
      * 添加标签集合
      */
@@ -80,12 +86,21 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
     public Response deleteTag(DeleteTagReqVO deleteTagReqVO) {
         // 标签 ID
         Long tagId = deleteTagReqVO.getId();
+        // 校验该标签下是否有关联的文章，若有，则不允许删除，提示用户需要先删除标签下的文章
+        ArticleTagRelDO articleTagRelDO = articleTagRelMapper.selectOneByTagId(tagId);
+        if (Objects.nonNull(articleTagRelDO)) {
+            log.warn("==> 此标签下包含文章，无法删除，tagId: {}", tagId);
+            throw new BizException(ResponseCodeEnum.TAG_CAN_NOT_DELETE);
+        }        ;
         // 根据标签 ID 删除
         int count = tagMapper.deleteById(tagId);
 
         return count == 1 ? Response.success() : Response.fail(ResponseCodeEnum.TAG_NOT_EXISTED);
     }
 
+    /**
+     * 根据标签关键词模糊查询
+     */
     @Override
     public Response searchTags(SearchTagsReqVO searchTagsReqVO) {
         String key = searchTagsReqVO.getKey();
@@ -101,6 +116,28 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
                             .build())
                     .collect(Collectors.toList());
         }
+        return Response.success(vos);
+    }
+
+    /**
+     * 回显标签 Select 列表数据
+     */
+    @Override
+    public Response findTagSelectList() {
+        // Wrappers.emptyWrapper()  表示查询条件为空=null  查询所有记录
+        List<TagDO> tagDOS = tagMapper.selectList(Wrappers.emptyWrapper());
+
+        // DO 转 VO
+        List<SelectRspVO> vos = null;
+        if (!CollectionUtils.isEmpty(tagDOS)) {
+            vos = tagDOS.stream()
+                    .map(tagDO -> SelectRspVO.builder()
+                            .label(tagDO.getName())
+                            .value(tagDO.getId())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
         return Response.success(vos);
     }
 

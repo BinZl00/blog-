@@ -246,12 +246,12 @@ public class AdminArticleServiceImpl implements AdminArticleService {
         ArticleCategoryRelDO articleCategoryRelDO = articleCategoryRelMapper.selectByArticleId(articleId);
         List<ArticleTagRelDO> articleTagRelDOS = articleTagRelMapper.selectByArticleId(articleId);
 
-        // 获取对应标签 ID 集合
+        // 文章-标签表 获取与特定文章关联的标签 ID 列表，而不是所有标签的 ID 列表(tag表)
         List<Long> tagIds = articleTagRelDOS.stream().map(ArticleTagRelDO::getTagId).collect(Collectors.toList());
 
         // DO 转 VO
         FindArticleDetailRspVO vo = ArticleDetailConvert.INSTANCE.convertDO2VO(articleDO);
-        //补充子表
+        //补充
         vo.setContent(articleContentDO.getContent());
         vo.setCategoryId(articleCategoryRelDO.getCategoryId());
         vo.setTagIds(tagIds);

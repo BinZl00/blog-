@@ -28,4 +28,9 @@ public interface AdminTagService {
      */
     Response searchTags(SearchTagsReqVO searchTagsReqVO);
 
+    /**
+     * 回显标签 Select 列表数据
+     */
+    Response findTagSelectList();
+
 }
