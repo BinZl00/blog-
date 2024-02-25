@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.binbin.weblog.common.domain.dos.ArticleCategoryRelDO;
 
+import java.util.List;
+
 public interface ArticleCategoryRelMapper extends BaseMapper<ArticleCategoryRelDO> {
     /**
      * 根据主表文章 ID 对应子表外键 删除关联记录
@@ -30,6 +32,16 @@ public interface ArticleCategoryRelMapper extends BaseMapper<ArticleCategoryRelD
         return selectOne(Wrappers.<ArticleCategoryRelDO>lambdaQuery()
                 .eq(ArticleCategoryRelDO::getCategoryId, categoryId)
                 .last("LIMIT 1") ); //LIMIT 1 确保只返回一个结果。
+    }
+
+    /**
+     * 根据多文章 ID 集合批量查询
+     * @param articleIds
+     */
+    default List<ArticleCategoryRelDO> selectByArticleIds(List<Long> articleIds) {
+        return selectList(Wrappers.<ArticleCategoryRelDO>lambdaQuery()
+                .in(ArticleCategoryRelDO::getArticleId, articleIds));
+        // SELECT * FROM t_article_category_rel WHERE articleId IN (1,.,.,....);
     }
 
 
