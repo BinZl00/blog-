@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.binbin.weblog.common.domain.dos.ArticleDO;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public interface ArticleMapper extends BaseMapper<ArticleDO> {
@@ -32,6 +33,24 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
                 .le(Objects.nonNull(endDate), ArticleDO::getCreateTime, endDate)  // 小于等于 endDate
                 .orderByDesc(ArticleDO::getCreateTime); // 按创建时间倒叙
 //返回包含查询结果的 Page 对象，包含了分页信息（如当前页码、每页大小、总记录数等）以及 前端搜索框的查询结果列表。
+        return selectPage(page, wrapper);
+    }
+
+    /**
+     * 根据文章 ID 批量分页查询
+     * @param current
+     * @param size
+     * @param articleIds
+     */
+    default Page<ArticleDO> selectPageListByArticleIds(Long current, Long size, List<Long> articleIds) {
+        // 分页对象(查询第几页、每页多少数据)
+        Page<ArticleDO> page = new Page<>(current, size);
+
+        // 构建查询条件
+        LambdaQueryWrapper<ArticleDO> wrapper = Wrappers.<ArticleDO>lambdaQuery()
+                .in(ArticleDO::getId, articleIds) // 批量查询
+                .orderByDesc(ArticleDO::getCreateTime); // 按创建时间倒叙
+
         return selectPage(page, wrapper);
     }
 

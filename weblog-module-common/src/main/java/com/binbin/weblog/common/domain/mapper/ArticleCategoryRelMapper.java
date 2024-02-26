@@ -44,5 +44,13 @@ public interface ArticleCategoryRelMapper extends BaseMapper<ArticleCategoryRelD
         // SELECT * FROM t_article_category_rel WHERE articleId IN (1,.,.,....);
     }
 
+    /**
+     * 根据分类 ID 查询所有的关联记录
+     * @param categoryId
+     */
+    default List<ArticleCategoryRelDO> selectListByCategoryId(Long categoryId) {
+        return selectList(Wrappers.<ArticleCategoryRelDO>lambdaQuery()
+                .eq(ArticleCategoryRelDO::getCategoryId, categoryId));
+    }
 
 }
