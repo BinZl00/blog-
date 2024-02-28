@@ -1,6 +1,7 @@
 package com.binbin.weblog.common.domain.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -76,5 +77,19 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
                 .lt(ArticleDO::getId, articleId) // 查询比当前文章 ID 小的
                 .last("limit 1")); // 第一条记录即为上一篇文章
     }
+
+    /**
+     * 阅读量+1
+     * @param articleId
+     */
+    default int increaseReadNum(Long articleId) {
+        // 执行 SQL : UPDATE t_article SET read_num = read_num + 1 WHERE id = #{articleId}
+    // Wrappers.<ArticleDO>lambdaUpdate().set(ArticleDO::getReadNum, articleDO -> articleDO.getReadNum() + 1);
+        return update(null,
+                Wrappers.<ArticleDO>lambdaUpdate().setSql("read_num = read_num + 1")
+                .eq(ArticleDO::getId, articleId));
+
+    }
+
 
 }

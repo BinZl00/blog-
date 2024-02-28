@@ -3,6 +3,7 @@ package com.binbin.weblog.web.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.binbin.weblog.admin.event.ReadArticleEvent;
 import com.binbin.weblog.common.domain.dos.*;
 import com.binbin.weblog.common.domain.mapper.*;
 import com.binbin.weblog.common.enums.ResponseCodeEnum;
@@ -17,6 +18,7 @@ import com.binbin.weblog.web.model.vo.tag.FindTagListRspVO;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +43,8 @@ public class ArticleServiceImpl implements ArticleService {
     private TagMapper tagMapper;
     @Autowired
     private ArticleTagRelMapper articleTagRelMapper;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 获取首页文章分页数据
@@ -193,6 +197,9 @@ public class ArticleServiceImpl implements ArticleService {
             vo.setNextArticle(nextArticleVO);
         }
 
+        /* 发布文章阅读事件，更新阅读量是一个耗时操作，直接在主线程中执行会影响用户体验
+        只需关注如何呈现文章内容，而不必关心阅读量的更新。阅读量的更新由订阅了阅读文章事件的监听器负责*/
+        eventPublisher.publishEvent(new ReadArticleEvent(this, articleId));
         return Response.success(vo);
     }
 
