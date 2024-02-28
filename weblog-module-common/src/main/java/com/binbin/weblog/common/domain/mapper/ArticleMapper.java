@@ -54,4 +54,27 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
         return selectPage(page, wrapper);
     }
 
+    /**
+     * 查询下一篇文章
+     * @param articleId
+     */
+    default ArticleDO selectPreArticle(Long articleId) {
+        return selectOne(Wrappers.<ArticleDO>lambdaQuery()
+                .orderByAsc(ArticleDO::getId) // 按文章 ID 升序排列
+                .gt(ArticleDO::getId, articleId) // 选择 ID 大于 当前articleId 的记录
+                .last("limit 1")); // .last()自定义语句 第一条记录即为下一篇文章
+    }
+
+    /**
+     * 查询上一篇文章
+     * @param articleId
+     * @return
+     */
+    default ArticleDO selectNextArticle(Long articleId) {
+        return selectOne(Wrappers.<ArticleDO>lambdaQuery()
+                .orderByDesc(ArticleDO::getId) // 按文章 ID 倒序排列
+                .lt(ArticleDO::getId, articleId) // 查询比当前文章 ID 小的
+                .last("limit 1")); // 第一条记录即为上一篇文章
+    }
+
 }
